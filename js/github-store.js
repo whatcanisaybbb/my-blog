@@ -36,7 +36,7 @@ const GitHubStore = (() => {
     }
     if (!res.ok) throw new Error('获取文章失败: ' + res.status);
     const data = await res.json();
-    const decoded = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    const decoded = JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g, '')), c => c.charCodeAt(0))));
     return { content: decoded, sha: data.sha };
   }
 
@@ -45,7 +45,7 @@ const GitHubStore = (() => {
     const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dataFile}`;
     const body = JSON.stringify({
       message: '更新博客文章',
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2)))),
+      content: btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(posts, null, 2)))),
       branch: CONFIG.branch,
       sha: sha  // 更新时需要传 sha
     });
