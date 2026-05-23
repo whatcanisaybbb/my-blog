@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的博客</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="navbar">
-  <a href="/" class="logo">我的<span>博客</span></a>
+  <a href="./" class="logo">我的<span>博客</span></a>
   <nav>
-    <a href="/" class="active">首页</a>
-    <a href="/admin.html">管理</a>
+    <a href="./" class="active">首页</a>
+    <a href="admin.html">管理</a>
   </nav>
 </header>
 
@@ -31,21 +31,17 @@
   <p>© 2026 我的博客 · 用 ❤️ 和代码构建</p>
 </footer>
 
-<script src="/js/github-store.js"></script>
+<script src="js/github-store.js"></script>
 <script>
   GitHubStore.getPosts()
     .then(posts => {
       const el = document.getElementById('postList');
       if (posts.length === 0) {
-        el.innerHTML = `
-          <div class="empty">
-            <div class="icon">📝</div>
-            <p>还没有文章，去<a href="/admin.html">管理后台</a>写一篇吧！</p>
-          </div>`;
+        el.innerHTML = `<div class="empty"><div class="icon">📝</div><p>还没有文章，去<a href="admin.html">管理后台</a>写一篇吧！</p></div>`;
         return;
       }
       el.innerHTML = posts.map(post => `
-        <a href="/post.html?id=${post.id}" class="post-card">
+        <a href="post.html?id=${post.id}" class="post-card">
           <h2 class="post-title">${esc(post.title)}</h2>
           <p class="post-excerpt">${esc(stripMd(post.content).slice(0, 120))}...</p>
           <div class="post-meta">

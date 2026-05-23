@@ -4,21 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>文章 - 我的博客</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
 </head>
 <body>
 
 <header class="navbar">
-  <a href="/" class="logo">我的<span>博客</span></a>
+  <a href="./" class="logo">我的<span>博客</span></a>
   <nav>
-    <a href="/">首页</a>
-    <a href="/admin.html">管理</a>
+    <a href="./">首页</a>
+    <a href="admin.html">管理</a>
   </nav>
 </header>
 
 <main class="container">
-  <a href="/" class="back-link">← 返回首页</a>
+  <a href="./" class="back-link">← 返回首页</a>
   <div id="article"><div class="loading"></div></div>
 </main>
 
@@ -33,7 +33,7 @@
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/css.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/json.min.js"></script>
-<script src="/js/github-store.js"></script>
+<script src="js/github-store.js"></script>
 
 <script>
   marked.setOptions({
@@ -54,7 +54,7 @@
       .then(post => {
         if (!post) {
           document.getElementById('article').innerHTML = `
-            <div class="empty"><div class="icon">😢</div><p>文章不存在或已被删除</p><a href="/">返回首页</a></div>`;
+            <div class="empty"><div class="icon">😢</div><p>文章不存在或已被删除</p><a href="./">返回首页</a></div>`;
           return;
         }
         document.title = post.title + ' - 我的博客';
