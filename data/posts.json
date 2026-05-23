@@ -1,0 +1,10 @@
+[
+  {
+    "id": "hello-world",
+    "title": "🎉 我的第一篇博客文章",
+    "content": "# 欢迎来到我的博客\n\n这是我的第一篇博客文章！\n\n## 关于这个博客\n\n这是一个用 **Node.js** 和 **原生 JavaScript** 搭建的个人博客，没有用任何框架，代码简单易懂。\n\n### 功能特点\n\n- 🌙 深色主题，护眼舒适\n- ✍️ Markdown 写作，实时预览\n- 🏷️ 标签分类管理\n- 📱 手机电脑都能看\n- ⚡ 轻量快速\n\n## 代码示例\n\n```javascript\n// 这是一个简单的 JavaScript 示例\nfunction hello(name) {\n  console.log(`你好，${name}！`);\n}\nhello('世界');\n```\n\n```python\n# Python 也支持高亮\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nfor i in range(10):\n    print(fibonacci(i))\n```\n\n## 引用\n\n> 代码是写给人看的，只是顺便能被机器执行。\n> —— Harold Abelson\n\n## 表格\n\n| 技术 | 用途 |\n|------|------|\n| HTML | 页面结构 |\n| CSS | 样式美化 |\n| JavaScript | 交互逻辑 |\n| Node.js | 后端服务 |\n\n---\n\n感谢阅读！去**管理后台**写你自己的文章吧 🚀",
+    "tags": ["博客", "介绍", "Hello World"],
+    "date": "2026-05-23T00:00:00.000Z",
+    "updated": "2026-05-23T00:00:00.000Z"
+  }
+]

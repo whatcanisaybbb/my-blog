@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章 - 我的博客</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+</head>
+<body>
+
+<header class="navbar">
+  <a href="/" class="logo">我的<span>博客</span></a>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/admin.html">管理</a>
+  </nav>
+</header>
+
+<main class="container">
+  <a href="/" class="back-link">← 返回首页</a>
+  <div id="article"><div class="loading"></div></div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 我的博客 · 用 ❤️ 和代码构建</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/json.min.js"></script>
+<script src="/js/github-store.js"></script>
+
+<script>
+  marked.setOptions({
+    highlight: function(code, lang) {
+      if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
+      return hljs.highlightAuto(code).value;
+    },
+    breaks: true, gfm: true
+  });
+
+  const params = new URLSearchParams(location.search);
+  const postId = params.get('id');
+
+  if (!postId) {
+    document.getElementById('article').innerHTML = '<div class="empty"><p>文章不存在</p></div>';
+  } else {
+    GitHubStore.getPost(postId)
+      .then(post => {
+        if (!post) {
+          document.getElementById('article').innerHTML = `
+            <div class="empty"><div class="icon">😢</div><p>文章不存在或已被删除</p><a href="/">返回首页</a></div>`;
+          return;
+        }
+        document.title = post.title + ' - 我的博客';
+        document.getElementById('article').innerHTML = `
+          <header class="article-header">
+            <h1>${esc(post.title)}</h1>
+            <div class="meta">
+              <span>📅 ${fmtDate(post.date)}</span>
+              ${post.updated !== post.date ? `<span>✏️ 更新于 ${fmtDate(post.updated)}</span>` : ''}
+              <div class="post-tags">
+                ${(post.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+              </div>
+            </div>
+          </header>
+          <article class="article-content">${marked.parse(post.content)}</article>
+        `;
+      })
+      .catch(err => {
+        document.getElementById('article').innerHTML =
+          `<div class="empty"><p>加载失败: ${esc(err.message)}</p></div>`;
+      });
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  function fmtDate(d) { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }
+</script>
+
+</body>
+</html>
