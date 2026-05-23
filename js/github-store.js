@@ -36,7 +36,7 @@ const GitHubStore = (() => {
     }
     if (!res.ok) throw new Error('获取文章失败: ' + res.status);
     const data = await res.json();
-    const decoded = JSON.parse(atob(data.content));
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
     return { content: decoded, sha: data.sha };
   }
 
