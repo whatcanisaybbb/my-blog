@@ -86,6 +86,39 @@
     .toast.error { background: rgba(248,81,73,0.15); border-color: var(--red); color: var(--red); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     .hidden { display: none !important; }
+
+    /* ===== 文件管理 ===== */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius); padding: 2.5rem;
+      text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1.5rem;
+      background: var(--bg-card);
+    }
+    .upload-zone:hover, .upload-zone.drag {
+      border-color: var(--accent); background: rgba(88,166,255,0.05);
+    }
+    .upload-zone .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .upload-zone p { color: var(--text-muted); font-size: 0.9rem; }
+    .upload-zone input[type=file] { display: none; }
+    .file-table { width: 100%; border-collapse: collapse; }
+    .file-table th { text-align: left; padding: 0.8rem 1rem; font-size: 0.82rem; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 500; }
+    .file-table td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .file-table tr:hover td { background: var(--bg-hover); }
+    .file-table .actions { display: flex; gap: 0.4rem; }
+    .file-table .fname { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-progress { margin-bottom: 1rem; }
+    .upload-progress .bar {
+      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 0.3rem;
+    }
+    .upload-progress .bar-fill {
+      height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; width: 0%;
+    }
+    .upload-progress .info { font-size: 0.8rem; color: var(--text-muted); }
+    .sidebar .server-status {
+      display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.2rem; font-size: 0.78rem; color: var(--text-dim);
+    }
+    .sidebar .server-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .sidebar .server-status .dot.ok { background: var(--green); }
+
     @media (max-width: 768px) { .sidebar { display: none; } .editor-layout { grid-template-columns: 1fr; } .admin-main { padding: 1rem; } }
   </style>
 </head>
@@ -99,21 +132,19 @@
   </nav>
 </header>
 
-<!-- Token 登录 -->
+<!-- 登录 -->
 <div id="loginPage">
   <div class="login-box">
     <h2>🔐 管理后台</h2>
-    <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem">
-      输入 GitHub Token 登录管理
-    </p>
     <div class="form-group">
-      <label>GitHub Personal Access Token</label>
-      <input type="password" class="form-control" id="tokenInput" placeholder="ghp_xxxxx..." autofocus>
+      <label>用户名</label>
+      <input type="text" class="form-control" id="loginUser" placeholder="用户名" autofocus>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">验证并登录</button>
-    <p style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--text-dim)">
-      Token 只存在浏览器本地，不会上传到任何服务器
-    </p>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" class="form-control" id="loginPass" placeholder="密码">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">登录</button>
   </div>
 </div>
 
@@ -124,11 +155,19 @@
       <div class="section-title">内容管理</div>
       <a href="#" class="active" data-page="list" onclick="showPage('list', this)">📋 文章列表</a>
       <a href="#" data-page="edit" onclick="showPage('edit', this)">✏️ 写文章</a>
-      <div style="height:1rem"></div>
+      <div style="height:0.5rem"></div>
+      <div class="section-title">文件管理</div>
+      <a href="#" data-page="files" onclick="showPage('files', this)">📁 我的文件</a>
+      <div style="height:0.5rem"></div>
       <div class="section-title">系统</div>
+      <div class="server-status" id="serverStatus">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">检测中...</span>
+      </div>
       <a href="#" onclick="logout()">🚪 退出登录</a>
     </aside>
 
+    <!-- 文章列表 -->
     <main class="admin-main" id="page-list">
       <div class="page-header">
         <h1>📋 文章列表</h1>
@@ -137,6 +176,7 @@
       <div id="postTableWrap"><div class="loading"></div></div>
     </main>
 
+    <!-- 编辑器 -->
     <main class="admin-main hidden" id="page-edit">
       <div class="page-header">
         <h1 id="editorTitle">✏️ 写文章</h1>
@@ -182,49 +222,114 @@ console.log('代码块');
         </div>
       </div>
     </main>
+
+    <!-- 文件管理 -->
+    <main class="admin-main hidden" id="page-files">
+      <div class="page-header">
+        <h1>📁 我的文件</h1>
+      </div>
+
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">📤</div>
+        <p>点击选择文件或拖拽到此处上传</p>
+        <p style="font-size:0.8rem;margin-top:0.3rem;color:var(--text-dim)">支持多文件，单个文件最大 100MB</p>
+        <input type="file" id="fileInput" multiple>
+      </div>
+
+      <div id="uploadProgress" class="upload-progress hidden">
+        <div class="info" id="uploadInfo">上传中...</div>
+        <div class="bar"><div class="bar-fill" id="uploadBar"></div></div>
+      </div>
+
+      <div id="fileTableWrap"><div class="loading"></div></div>
+    </main>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
 <script src="js/github-store.js"></script>
 <script>
+  // ===== 后端 API 配置 =====
+  // 内网地址，后端服务运行在这台机器的 3001 端口
+  const API = 'http://localhost:3001';
+
   let currentTags = [];
   let editingId = null;
 
+  // ===== API 调用 =====
+  async function api(path, opts = {}) {
+    const token = localStorage.getItem('admin_token');
+    const res = await fetch(API + path, {
+      ...opts,
+      headers: {
+        ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+        ...(opts.headers || {})
+      }
+    });
+    if (res.status === 401) { logout(); throw new Error('登录过期'); }
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || '请求失败');
+    }
+    // 204 No Content
+    if (res.status === 204) return {};
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('json')) return res.json();
+    return res;
+  }
+
   // ===== 登录 =====
   async function login() {
-    const token = document.getElementById('tokenInput').value.trim();
-    if (!token) return toast('请输入 Token', 'error');
-    toast('验证中...', 'success');
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value;
+    if (!username) return toast('请输入用户名', 'error');
+    if (!password) return toast('请输入密码', 'error');
     try {
-      const valid = await GitHubStore.verifyToken(token);
-      if (valid) {
-        GitHubStore.setToken(token);
+      const data = await fetch(API + '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      }).then(r => r.json());
+      if (data.token) {
+        localStorage.setItem('admin_token', data.token);
+        localStorage.setItem('admin_user', data.username);
         showAdmin();
       } else {
-        toast('Token 无效，请检查', 'error');
+        toast(data.error || '登录失败', 'error');
       }
     } catch (e) {
-      toast('验证失败: ' + e.message, 'error');
+      toast('连接服务器失败，请确认后端已启动', 'error');
     }
   }
 
-  document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
 
   function logout() {
-    GitHubStore.clearToken();
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+    editingId = null;
+    currentTags = [];
     location.reload();
   }
 
-  async function showAdmin() {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('adminPage').classList.remove('hidden');
-    await loadPosts();
+  // 检查是否已登录
+  if (localStorage.getItem('admin_token')) {
+    showAdmin();
   }
 
-  // 检查是否已登录
-  if (GitHubStore.getToken()) {
-    showAdmin();
+  // ===== 服务器状态 =====
+  async function checkServer() {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    try {
+      await api('/api/verify');
+      dot.classList.add('ok');
+      text.textContent = '后端已连接';
+    } catch {
+      dot.classList.remove('ok');
+      text.textContent = '后端未启动';
+    }
   }
 
   // ===== 页面切换 =====
@@ -233,7 +338,9 @@ console.log('代码块');
     if (el) el.classList.add('active');
     document.getElementById('page-list').classList.toggle('hidden', page !== 'list');
     document.getElementById('page-edit').classList.toggle('hidden', page !== 'edit');
+    document.getElementById('page-files').classList.toggle('hidden', page !== 'files');
     if (page === 'list') loadPosts();
+    if (page === 'files') loadFiles();
   }
 
   // ===== 文章列表 =====
@@ -253,10 +360,10 @@ console.log('代码块');
               <tr>
                 <td><a href="post.html?id=${p.id}" target="_blank" style="color:var(--text)">${esc(p.title)}</a></td>
                 <td>${(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join(' ')}</td>
-                <td style="color:var(--text-muted);font-size:0.82rem">${fmtDate(p.date)}</td>
+                <td style="color:var(--text-muted);font-size:0.82rem">${fmtDate2(p.date)}</td>
                 <td class="actions">
                   <button class="btn btn-ghost btn-sm" onclick="editPost('${p.id}')">编辑</button>
-                  <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">删除</button>
+                  <button class="btn btn-danger btn-sm" onclick="deletePostConfirm('${p.id}')">删除</button>
                 </td>
               </tr>
             `).join('')}
@@ -267,7 +374,6 @@ console.log('代码块');
     }
   }
 
-  // ===== 写/编辑 =====
   function newPost() {
     editingId = null;
     document.getElementById('editorTitle').textContent = '✏️ 写文章';
@@ -311,7 +417,7 @@ console.log('代码块');
     } catch (e) { toast('保存失败: ' + e.message, 'error'); }
   }
 
-  async function deletePost(id) {
+  async function deletePostConfirm(id) {
     if (!confirm('确定要删除这篇文章吗？')) return;
     try {
       await GitHubStore.deletePost(id);
@@ -353,15 +459,146 @@ console.log('代码块');
       : '<p style="color:var(--text-dim)">在左侧输入 Markdown，这里实时预览...</p>';
   }
 
+  // ===== 文件管理 =====
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('fileInput');
+
+  // 拖拽
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag');
+    if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) uploadFiles(fileInput.files);
+    fileInput.value = '';
+  });
+
+  async function uploadFiles(fileList) {
+    const progress = document.getElementById('uploadProgress');
+    const bar = document.getElementById('uploadBar');
+    const info = document.getElementById('uploadInfo');
+    progress.classList.remove('hidden');
+    bar.style.width = '0%';
+    info.textContent = `正在上传 ${fileList.length} 个文件...`;
+
+    const formData = new FormData();
+    for (const f of fileList) formData.append('files', f);
+
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', API + '/api/upload');
+      const token = localStorage.getItem('admin_token');
+      if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const pct = Math.round(e.loaded / e.total * 100);
+          bar.style.width = pct + '%';
+          info.textContent = `上传中... ${pct}% (${fmtSize(e.loaded)} / ${fmtSize(e.total)})`;
+        }
+      };
+
+      xhr.onload = () => {
+        progress.classList.add('hidden');
+        if (xhr.status === 200) {
+          toast('上传成功！', 'success');
+          loadFiles();
+        } else {
+          toast('上传失败', 'error');
+        }
+      };
+
+      xhr.onerror = () => {
+        progress.classList.add('hidden');
+        toast('上传失败，请检查服务器', 'error');
+      };
+
+      xhr.send(formData);
+    } catch (e) {
+      progress.classList.add('hidden');
+      toast('上传失败: ' + e.message, 'error');
+    }
+  }
+
+  async function loadFiles() {
+    const wrap = document.getElementById('fileTableWrap');
+    try {
+      const files = await api('/api/files');
+      if (files.length === 0) {
+        wrap.innerHTML = '<div class="empty"><div class="icon">📂</div><p>还没有上传文件</p></div>';
+        return;
+      }
+      wrap.innerHTML = `
+        <table class="file-table">
+          <thead><tr><th>文件名</th><th>大小</th><th>上传时间</th><th>操作</th></tr></thead>
+          <tbody>
+            ${files.map(f => `
+              <tr>
+                <td class="fname" title="${esc(f.name)}">${esc(f.name)}</td>
+                <td style="color:var(--text-muted)">${fmtSize(f.size)}</td>
+                <td style="color:var(--text-muted);font-size:0.82rem">${fmtDate2(f.mtime)}</td>
+                <td class="actions">
+                  <button class="btn btn-ghost btn-sm" onclick="downloadFile('${f.id}','${esc(f.name)}')">下载</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.id}')">删除</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      wrap.innerHTML = `<div class="empty"><p>加载失败: ${esc(e.message)}</p></div>`;
+    }
+  }
+
+  async function downloadFile(id, name) {
+    try {
+      const res = await fetch(API + '/api/download/' + id, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
+      });
+      if (!res.ok) throw new Error('下载失败');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) { toast('下载失败: ' + e.message, 'error'); }
+  }
+
+  async function deleteFile(id) {
+    if (!confirm('确定删除这个文件？')) return;
+    try {
+      await api('/api/files/' + id, { method: 'DELETE' });
+      toast('已删除', 'success');
+      loadFiles();
+    } catch (e) { toast('删除失败: ' + e.message, 'error'); }
+  }
+
+  // ===== 进入管理后台 =====
+  async function showAdmin() {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('adminPage').classList.remove('hidden');
+    await checkServer();
+    await loadPosts();
+  }
+
   // ===== 工具 =====
   function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-  function fmtDate(d) { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }
+  function fmtDate2(d) { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; }
+  function fmtSize(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    if (b < 1024 * 1024 * 1024) return (b / 1024 / 1024).toFixed(1) + ' MB';
+    return (b / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+  }
   function toast(msg, type) {
     document.querySelectorAll('.toast').forEach(t => t.remove());
     const t = document.createElement('div');
     t.className = `toast ${type}`; t.textContent = msg;
     document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2500);
+    setTimeout(() => t.remove(), 3000);
   }
 </script>
 

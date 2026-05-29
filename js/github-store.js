@@ -15,26 +15,28 @@ const GitHubStore = (() => {
 
   let token = localStorage.getItem('gh_token') || '';
 
-  function headers() {
-    return {
-      'Authorization': `Bearer ${token}`,
+  function headers(requireAuth) {
+    const h = {
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json'
     };
+    if (requireAuth && token) {
+      h['Authorization'] = `Bearer ${token}`;
+    }
+    return h;
   }
 
   // 获取文件内容（返回 { content: [...], sha: '...' }）
   async function fetchPosts() {
     const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dataFile}?ref=${CONFIG.branch}`;
-    const res = await fetch(url, { headers: headers() });
+    const res = await fetch(url, { headers: headers(false) });
     if (res.status === 404) {
-      // 文件不存在，返回空
       return { content: [], sha: null };
     }
     if (!res.ok) throw new Error('获取文章失败: ' + res.status);
     const data = await res.json();
-    const decoded = JSON.parse(atob(data.content));
+    const decoded = JSON.parse(new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g, '')), c => c.charCodeAt(0))));
     return { content: decoded, sha: data.sha };
   }
 
@@ -43,11 +45,11 @@ const GitHubStore = (() => {
     const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dataFile}`;
     const body = JSON.stringify({
       message: '更新博客文章',
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2)))),
+      content: btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(posts, null, 2)))),
       branch: CONFIG.branch,
       sha: sha  // 更新时需要传 sha
     });
-    const res = await fetch(url, { method: 'PUT', headers: headers(), body });
+    const res = await fetch(url, { method: 'PUT', headers: headers(true), body });
     if (!res.ok) {
       const err = await res.json();
       throw new Error('保存失败: ' + (err.message || res.status));
