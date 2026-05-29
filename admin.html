@@ -6,120 +6,95 @@
   <title>管理后台 - 我的博客</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .admin-layout { display: flex; min-height: calc(100vh - 60px); }
+    .admin-layout { display: flex; min-height: calc(100vh - 64px); }
     .sidebar {
       width: 220px; background: var(--bg-card); border-right: 1px solid var(--border);
-      padding: 1.5rem 0; flex-shrink: 0; position: sticky; top: 60px;
-      height: calc(100vh - 60px); overflow-y: auto;
+      padding: 1.5rem 0; flex-shrink: 0; position: sticky; top: 64px;
+      height: calc(100vh - 64px); overflow-y: auto;
     }
     .sidebar .section-title {
-      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
-      color: var(--text-dim); padding: 0 1.2rem; margin-bottom: 0.5rem;
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--text-dim); padding: 0 1.2rem; margin-bottom: 0.4rem; font-weight: 600;
     }
     .sidebar a {
-      display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1.2rem;
-      color: var(--text-muted); font-size: 0.9rem; transition: all 0.15s;
-      border-left: 3px solid transparent; cursor: pointer;
+      display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1.2rem;
+      color: var(--text-muted); font-size: 0.88rem; font-weight: 500;
+      transition: all 0.15s; border-left: 3px solid transparent; cursor: pointer;
     }
     .sidebar a:hover { color: var(--text); background: var(--bg-hover); }
-    .sidebar a.active { color: var(--accent); background: rgba(88,166,255,0.08); border-left-color: var(--accent); }
-    .admin-main { flex: 1; padding: 2rem; max-width: 900px; }
+    .sidebar a.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
+    .admin-main { flex: 1; padding: 2.5rem; max-width: 960px; position: relative; z-index: 1; }
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.2rem;
-      border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 500; cursor: pointer;
+      border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer;
       border: 1px solid transparent; transition: all 0.2s; font-family: inherit;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-hover); color: #fff; }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 2px 12px var(--accent-glow); }
+    .btn-primary:hover { background: var(--accent-hover); color: #fff; transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: var(--text-muted); border-color: var(--border); }
     .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
-    .btn-danger { background: transparent; color: var(--red); border-color: var(--red); }
+    .btn-danger { background: transparent; color: var(--red); border-color: rgba(248,113,113,0.3); }
     .btn-danger:hover { background: var(--red); color: #fff; }
-    .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
-    .form-group { margin-bottom: 1.2rem; }
-    .form-group label { display: block; font-size: 0.88rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-muted); }
+    .btn-sm { padding: 0.3rem 0.75rem; font-size: 0.78rem; border-radius: var(--radius-xs); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-muted); }
     .form-control {
       width: 100%; padding: 0.7rem 1rem; background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); color: var(--text); font-size: 0.95rem; font-family: inherit;
-      transition: border-color 0.2s; outline: none;
+      border-radius: var(--radius-sm); color: var(--text); font-size: 0.92rem; font-family: inherit;
+      transition: all 0.2s; outline: none;
     }
-    .form-control:focus { border-color: var(--accent); }
-    textarea.form-control { min-height: 400px; resize: vertical; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.7; }
-    .post-table { width: 100%; border-collapse: collapse; }
-    .post-table th { text-align: left; padding: 0.8rem 1rem; font-size: 0.82rem; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 500; }
-    .post-table td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    .post-table tr:hover td { background: var(--bg-hover); }
-    .post-table .actions { display: flex; gap: 0.4rem; }
+    .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    textarea.form-control { min-height: 400px; resize: vertical; font-family: var(--font-mono); font-size: 0.88rem; line-height: 1.7; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.78rem; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .data-table tr:hover td { background: var(--bg-hover); }
+    .data-table .actions { display: flex; gap: 0.4rem; }
+    .data-table .fname { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .editor-pane textarea { min-height: 500px; }
-    .preview-pane {
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 1.5rem; min-height: 500px; overflow-y: auto;
-    }
-    .preview-pane .preview-content { font-size: 0.95rem; line-height: 1.8; }
-    .preview-content h1,.preview-content h2,.preview-content h3 { margin: 1.5rem 0 0.8rem; }
-    .preview-content p { margin-bottom: 1rem; }
-    .preview-content pre { background: var(--bg); padding: 1rem; border-radius: 6px; overflow-x: auto; }
-    .preview-content code { font-family: var(--font-mono); font-size: 0.88em; }
-    .preview-content :not(pre)>code { background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--orange); }
-    .tag-input-wrap {
-      display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.5rem;
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); min-height: 42px;
-    }
-    .tag-input-wrap:focus-within { border-color: var(--accent); }
-    .tag-input-wrap .tag-item {
-      background: var(--bg-hover); color: var(--accent); padding: 0.2rem 0.6rem;
-      border-radius: 4px; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem; border: 1px solid var(--border);
-    }
-    .tag-input-wrap .tag-item .remove { cursor: pointer; opacity: 0.6; font-size: 1rem; line-height: 1; }
+    .preview-pane { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.5rem; min-height: 500px; overflow-y: auto; }
+    .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); min-height: 42px; }
+    .tag-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .tag-input-wrap .tag-item { background: var(--accent-glow); color: var(--accent); padding: 0.15rem 0.55rem; border-radius: var(--radius-xs); font-size: 0.78rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem; }
+    .tag-input-wrap .tag-item .remove { cursor: pointer; opacity: 0.5; font-size: 0.95rem; line-height: 1; }
     .tag-input-wrap .tag-item .remove:hover { opacity: 1; }
-    .tag-input-wrap input { flex: 1; min-width: 100px; background: none; border: none; color: var(--text); font-size: 0.9rem; outline: none; padding: 0.2rem; }
-    .login-box { max-width: 380px; margin: 6rem auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; }
-    .login-box h2 { text-align: center; margin-bottom: 1.5rem; font-size: 1.3rem; }
-    .toast {
-      position: fixed; top: 80px; right: 2rem; padding: 0.8rem 1.5rem;
-      border-radius: var(--radius-sm); font-size: 0.9rem; z-index: 999; animation: slideIn 0.3s ease; border: 1px solid;
-    }
-    .toast.success { background: rgba(63,185,80,0.15); border-color: var(--green); color: var(--green); }
-    .toast.error { background: rgba(248,81,73,0.15); border-color: var(--red); color: var(--red); }
+    .tag-input-wrap input { flex: 1; min-width: 100px; background: none; border: none; color: var(--text); font-size: 0.88rem; outline: none; padding: 0.2rem; }
+    .login-box { max-width: 380px; margin: 8rem auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-lg); }
+    .login-box .logo-big { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+    .login-box h2 { text-align: center; margin-bottom: 0.3rem; font-size: 1.25rem; font-weight: 700; }
+    .login-box .subtitle { text-align: center; color: var(--text-dim); font-size: 0.82rem; margin-bottom: 1.8rem; }
+    .toast { position: fixed; top: 80px; right: 2rem; padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.85rem; z-index: 999; animation: slideIn 0.3s ease; border: 1px solid; font-weight: 500; }
+    .toast.success { background: rgba(52,211,153,0.12); border-color: var(--green); color: var(--green); }
+    .toast.error { background: rgba(248,113,113,0.12); border-color: var(--red); color: var(--red); }
+    .toast.info { background: rgba(124,92,254,0.12); border-color: var(--accent); color: var(--accent); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     .hidden { display: none !important; }
-
-    /* ===== 文件管理 ===== */
-    .upload-zone {
-      border: 2px dashed var(--border); border-radius: var(--radius); padding: 2.5rem;
-      text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1.5rem;
-      background: var(--bg-card);
-    }
-    .upload-zone:hover, .upload-zone.drag {
-      border-color: var(--accent); background: rgba(88,166,255,0.05);
-    }
-    .upload-zone .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .upload-zone p { color: var(--text-muted); font-size: 0.9rem; }
-    .upload-zone input[type=file] { display: none; }
-    .file-table { width: 100%; border-collapse: collapse; }
-    .file-table th { text-align: left; padding: 0.8rem 1rem; font-size: 0.82rem; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 500; }
-    .file-table td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
-    .file-table tr:hover td { background: var(--bg-hover); }
-    .file-table .actions { display: flex; gap: 0.4rem; }
-    .file-table .fname { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.25s; margin-bottom: 1.5rem; background: var(--bg-card); }
+    .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--accent-glow); }
+    .upload-zone .icon { font-size: 2rem; margin-bottom: 0.4rem; }
+    .upload-zone p { color: var(--text-muted); font-size: 0.88rem; }
     .upload-progress { margin-bottom: 1rem; }
-    .upload-progress .bar {
-      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 0.3rem;
-    }
-    .upload-progress .bar-fill {
-      height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; width: 0%;
-    }
-    .upload-progress .info { font-size: 0.8rem; color: var(--text-muted); }
-    .sidebar .server-status {
-      display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.2rem; font-size: 0.78rem; color: var(--text-dim);
-    }
-    .sidebar .server-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
-    .sidebar .server-status .dot.ok { background: var(--green); }
-
-    @media (max-width: 768px) { .sidebar { display: none; } .editor-layout { grid-template-columns: 1fr; } .admin-main { padding: 1rem; } }
+    .upload-progress .bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 0.4rem; }
+    .upload-progress .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); border-radius: 2px; transition: width 0.3s; width: 0%; }
+    .upload-progress .info { font-size: 0.78rem; color: var(--text-muted); }
+    .server-status { display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: var(--text-dim); }
+    .server-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; transition: background 0.3s; }
+    .server-status .dot.ok { background: var(--green); box-shadow: 0 0 6px rgba(52,211,153,0.4); }
+    .video-player-wrap { background: #000; border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem; }
+    .video-player-wrap video { width: 100%; max-height: 70vh; display: block; }
+    .video-info .v-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .video-info .v-meta { font-size: 0.82rem; color: var(--text-muted); }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .video-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; transition: all 0.25s; }
+    .video-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .video-card .thumb { aspect-ratio: 16/9; background: linear-gradient(135deg, var(--bg-hover), var(--bg-elevated)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+    .video-card .vcard-body { padding: 0.75rem 0.9rem; }
+    .video-card .vcard-name { font-size: 0.82rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .video-card .vcard-meta { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.2rem; }
+    @media (max-width: 768px) { .sidebar { display: none; } .editor-layout { grid-template-columns: 1fr; } .admin-main { padding: 1.25rem; } .video-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
   </style>
 </head>
 <body>
@@ -132,10 +107,12 @@
   </nav>
 </header>
 
-<!-- 登录 -->
+<!-- 登录页 -->
 <div id="loginPage">
   <div class="login-box">
-    <h2>🔐 管理后台</h2>
+    <div class="logo-big">🔐</div>
+    <h2>管理后台</h2>
+    <p class="subtitle">登录以管理文章和文件</p>
     <div class="form-group">
       <label>用户名</label>
       <input type="text" class="form-control" id="loginUser" placeholder="用户名" autofocus>
@@ -144,7 +121,7 @@
       <label>密码</label>
       <input type="password" class="form-control" id="loginPass" placeholder="密码">
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">登录</button>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:0.7rem" onclick="login()">登录</button>
   </div>
 </div>
 
@@ -152,22 +129,22 @@
 <div id="adminPage" class="hidden">
   <div class="admin-layout">
     <aside class="sidebar">
-      <div class="section-title">内容管理</div>
+      <div class="section-title">内容</div>
       <a href="#" class="active" data-page="list" onclick="showPage('list', this)">📋 文章列表</a>
       <a href="#" data-page="edit" onclick="showPage('edit', this)">✏️ 写文章</a>
       <div style="height:0.5rem"></div>
-      <div class="section-title">文件管理</div>
+      <div class="section-title">文件</div>
       <a href="#" data-page="files" onclick="showPage('files', this)">📁 我的文件</a>
+      <a href="#" data-page="videos" onclick="showPage('videos', this)">🎬 视频库</a>
       <div style="height:0.5rem"></div>
       <div class="section-title">系统</div>
-      <div class="server-status" id="serverStatus">
+      <div class="server-status">
         <span class="dot" id="statusDot"></span>
         <span id="statusText">检测中...</span>
       </div>
       <a href="#" onclick="logout()">🚪 退出登录</a>
     </aside>
 
-    <!-- 文章列表 -->
     <main class="admin-main" id="page-list">
       <div class="page-header">
         <h1>📋 文章列表</h1>
@@ -176,7 +153,6 @@
       <div id="postTableWrap"><div class="loading"></div></div>
     </main>
 
-    <!-- 编辑器 -->
     <main class="admin-main hidden" id="page-edit">
       <div class="page-header">
         <h1 id="editorTitle">✏️ 写文章</h1>
@@ -187,7 +163,7 @@
       </div>
       <div class="form-group">
         <label>文章标题</label>
-        <input type="text" class="form-control" id="postTitle" placeholder="输入一个吸引人的标题...">
+        <input type="text" class="form-control" id="postTitle" placeholder="输入标题...">
       </div>
       <div class="form-group">
         <label>标签（回车添加）</label>
@@ -200,48 +176,43 @@
           <label>Markdown 内容</label>
           <textarea class="form-control" id="postContent" placeholder="用 Markdown 写点什么...
 
-# 一级标题
-## 二级标题
-
+# 标题
 **粗体** *斜体* `代码`
 
-- 列表项1
-- 列表项2
+- 列表项
 
-```js
-console.log('代码块');
-```
-
-> 引用文字"></textarea>
+> 引用"></textarea>
         </div>
         <div class="preview-pane">
-          <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:0.8rem">👁️ 实时预览</label>
-          <div class="preview-content" id="previewContent">
-            <p style="color:var(--text-dim)">在左侧输入 Markdown，这里实时预览...</p>
-          </div>
+          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:0.5px">实时预览</label>
+          <div id="previewContent"><p style="color:var(--text-dim)">在左侧输入 Markdown，这里实时预览...</p></div>
         </div>
       </div>
     </main>
 
-    <!-- 文件管理 -->
     <main class="admin-main hidden" id="page-files">
-      <div class="page-header">
-        <h1>📁 我的文件</h1>
-      </div>
-
+      <div class="page-header"><h1>📁 我的文件</h1></div>
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
         <div class="icon">📤</div>
         <p>点击选择文件或拖拽到此处上传</p>
-        <p style="font-size:0.8rem;margin-top:0.3rem;color:var(--text-dim)">支持多文件，单个文件最大 100MB</p>
+        <p style="font-size:0.78rem;margin-top:0.3rem;color:var(--text-dim)">支持多文件，最大 8GB</p>
         <input type="file" id="fileInput" multiple>
       </div>
-
       <div id="uploadProgress" class="upload-progress hidden">
         <div class="info" id="uploadInfo">上传中...</div>
         <div class="bar"><div class="bar-fill" id="uploadBar"></div></div>
       </div>
-
       <div id="fileTableWrap"><div class="loading"></div></div>
+    </main>
+
+    <main class="admin-main hidden" id="page-videos">
+      <div class="page-header"><h1>🎬 视频库</h1></div>
+      <div id="videoPlayerWrap" class="hidden">
+        <div class="video-player-wrap"><video id="videoPlayer" controls playsinline></video></div>
+        <div class="video-info"><div class="v-title" id="videoTitle"></div><div class="v-meta" id="videoMeta"></div></div>
+        <button class="btn btn-ghost btn-sm" style="margin-bottom:1rem" onclick="closePlayer()">← 返回列表</button>
+      </div>
+      <div id="videoListWrap"><div class="loading"></div></div>
     </main>
   </div>
 </div>
@@ -249,358 +220,172 @@ console.log('代码块');
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
 <script src="js/github-store.js"></script>
 <script>
-  // ===== 后端 API 配置 =====
-  // 内网地址，后端服务运行在这台机器的 3001 端口
-  const API = 'http://localhost:3001';
+const API = 'http://localhost:3001';
+let currentTags = [], editingId = null, currentVideoId = null;
 
-  let currentTags = [];
-  let editingId = null;
+async function api(path, opts = {}) {
+  const token = localStorage.getItem('admin_token');
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: { ...(token ? { 'Authorization': 'Bearer ' + token } : {}), ...(opts.headers || {}) }
+  });
+  if (res.status === 401) { logout(); throw new Error('登录过期'); }
+  if (!res.ok) { const body = await res.json().catch(() => ({})); throw new Error(body.error || '请求失败'); }
+  if (res.status === 204) return {};
+  return (res.headers.get('content-type') || '').includes('json') ? res.json() : res;
+}
 
-  // ===== API 调用 =====
-  async function api(path, opts = {}) {
-    const token = localStorage.getItem('admin_token');
-    const res = await fetch(API + path, {
-      ...opts,
-      headers: {
-        ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
-        ...(opts.headers || {})
-      }
-    });
-    if (res.status === 401) { logout(); throw new Error('登录过期'); }
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || '请求失败');
-    }
-    // 204 No Content
-    if (res.status === 204) return {};
-    const ct = res.headers.get('content-type') || '';
-    if (ct.includes('json')) return res.json();
-    return res;
-  }
-
-  // ===== 登录 =====
-  async function login() {
-    const username = document.getElementById('loginUser').value.trim();
-    const password = document.getElementById('loginPass').value;
-    if (!username) return toast('请输入用户名', 'error');
-    if (!password) return toast('请输入密码', 'error');
-    try {
-      const data = await fetch(API + '/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      }).then(r => r.json());
-      if (data.token) {
-        localStorage.setItem('admin_token', data.token);
-        localStorage.setItem('admin_user', data.username);
-        showAdmin();
-      } else {
-        toast(data.error || '登录失败', 'error');
-      }
-    } catch (e) {
-      toast('连接服务器失败，请确认后端已启动', 'error');
-    }
-  }
-
-  document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-  document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
-
-  function logout() {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
-    editingId = null;
-    currentTags = [];
-    location.reload();
-  }
-
-  // 检查是否已登录
-  if (localStorage.getItem('admin_token')) {
+async function login() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (!u || !p) return toast('请输入用户名和密码', 'error');
+  try {
+    const data = await fetch(API + '/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    }).then(r => { if (!r.ok) return r.json().then(d => { throw new Error(d.error); }); return r.json(); });
+    localStorage.setItem('admin_token', data.token);
     showAdmin();
-  }
+  } catch (e) { toast(e.message || '连接服务器失败', 'error'); }
+}
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
+if (localStorage.getItem('admin_token')) showAdmin();
 
-  // ===== 服务器状态 =====
-  async function checkServer() {
-    const dot = document.getElementById('statusDot');
-    const text = document.getElementById('statusText');
-    try {
-      await api('/api/verify');
-      dot.classList.add('ok');
-      text.textContent = '后端已连接';
-    } catch {
-      dot.classList.remove('ok');
-      text.textContent = '后端未启动';
-    }
-  }
+function logout() { localStorage.removeItem('admin_token'); editingId = null; currentTags = []; location.reload(); }
 
-  // ===== 页面切换 =====
-  function showPage(page, el) {
-    document.querySelectorAll('.sidebar a[data-page]').forEach(a => a.classList.remove('active'));
-    if (el) el.classList.add('active');
-    document.getElementById('page-list').classList.toggle('hidden', page !== 'list');
-    document.getElementById('page-edit').classList.toggle('hidden', page !== 'edit');
-    document.getElementById('page-files').classList.toggle('hidden', page !== 'files');
-    if (page === 'list') loadPosts();
-    if (page === 'files') loadFiles();
-  }
+async function checkServer() {
+  const dot = document.getElementById('statusDot'), text = document.getElementById('statusText');
+  try { await api('/api/verify'); dot.classList.add('ok'); text.textContent = '后端已连接'; }
+  catch { dot.classList.remove('ok'); text.textContent = '后端未启动'; }
+}
 
-  // ===== 文章列表 =====
-  async function loadPosts() {
-    const wrap = document.getElementById('postTableWrap');
-    try {
-      const posts = await GitHubStore.getPosts();
-      if (posts.length === 0) {
-        wrap.innerHTML = '<div class="empty"><div class="icon">📝</div><p>还没有文章，点击右上角"写文章"开始吧！</p></div>';
-        return;
-      }
-      wrap.innerHTML = `
-        <table class="post-table">
-          <thead><tr><th>标题</th><th>标签</th><th>日期</th><th>操作</th></tr></thead>
-          <tbody>
-            ${posts.map(p => `
-              <tr>
-                <td><a href="post.html?id=${p.id}" target="_blank" style="color:var(--text)">${esc(p.title)}</a></td>
-                <td>${(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join(' ')}</td>
-                <td style="color:var(--text-muted);font-size:0.82rem">${fmtDate2(p.date)}</td>
-                <td class="actions">
-                  <button class="btn btn-ghost btn-sm" onclick="editPost('${p.id}')">编辑</button>
-                  <button class="btn btn-danger btn-sm" onclick="deletePostConfirm('${p.id}')">删除</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>`;
-    } catch (e) {
-      wrap.innerHTML = `<div class="empty"><p>加载失败: ${esc(e.message)}</p></div>`;
-    }
-  }
+function showPage(page, el) {
+  document.querySelectorAll('.sidebar a[data-page]').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  ['list','edit','files','videos'].forEach(p => { const e = document.getElementById('page-' + p); if (e) e.classList.toggle('hidden', p !== page); });
+  if (page === 'list') loadPosts();
+  if (page === 'files') loadFiles();
+  if (page === 'videos') loadVideos();
+}
 
-  function newPost() {
-    editingId = null;
-    document.getElementById('editorTitle').textContent = '✏️ 写文章';
-    document.getElementById('postTitle').value = '';
-    document.getElementById('postContent').value = '';
-    currentTags = [];
-    renderTags();
-    updatePreview();
-    showPage('edit');
-  }
+async function loadPosts() {
+  const w = document.getElementById('postTableWrap');
+  try {
+    const posts = await GitHubStore.getPosts();
+    if (!posts.length) { w.innerHTML = '<div class="empty"><div class="icon">📝</div><p>还没有文章</p></div>'; return; }
+    w.innerHTML = '<table class="data-table"><thead><tr><th>标题</th><th>标签</th><th>日期</th><th>操作</th></tr></thead><tbody>' +
+      posts.map(p => '<tr><td><a href="post.html?id=' + p.id + '" target="_blank" style="color:var(--text)">' + esc(p.title) + '</a></td><td>' + (p.tags||[]).map(t=>'<span style="color:var(--accent);font-size:0.72rem;background:var(--accent-glow);padding:0.1rem 0.5rem;border-radius:4px">' + esc(t) + '</span>').join(' ') + '</td><td style="color:var(--text-muted);font-size:0.8rem">' + fmtDate(p.date) + '</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="editPost(\'' + p.id + '\')">编辑</button><button class="btn btn-danger btn-sm" onclick="deletePostConfirm(\'' + p.id + '\')">删除</button></td></tr>').join('') + '</tbody></table>';
+  } catch (e) { w.innerHTML = '<div class="empty"><p>加载失败: ' + esc(e.message) + '</p></div>'; }
+}
 
-  async function editPost(id) {
-    try {
-      const post = await GitHubStore.getPost(id);
-      if (!post) return toast('文章不存在', 'error');
-      editingId = id;
-      document.getElementById('editorTitle').textContent = '✏️ 编辑文章';
-      document.getElementById('postTitle').value = post.title;
-      document.getElementById('postContent').value = post.content;
-      currentTags = [...(post.tags || [])];
-      renderTags();
-      updatePreview();
-      showPage('edit');
-    } catch (e) { toast('加载失败: ' + e.message, 'error'); }
-  }
+function newPost() { editingId = null; document.getElementById('editorTitle').textContent = '✏️ 写文章'; document.getElementById('postTitle').value = ''; document.getElementById('postContent').value = ''; currentTags = []; renderTags(); updatePreview(); showPage('edit'); }
 
-  async function savePost() {
-    const title = document.getElementById('postTitle').value.trim();
-    const content = document.getElementById('postContent').value.trim();
-    if (!title) return toast('请输入标题', 'error');
-    if (!content) return toast('请输入内容', 'error');
-    try {
-      if (editingId) {
-        await GitHubStore.updatePost(editingId, { title, content, tags: currentTags });
-        toast('更新成功！', 'success');
-      } else {
-        await GitHubStore.createPost({ title, content, tags: currentTags });
-        toast('发布成功！', 'success');
-      }
-      showPage('list');
-    } catch (e) { toast('保存失败: ' + e.message, 'error'); }
-  }
+async function editPost(id) {
+  try {
+    const post = await GitHubStore.getPost(id);
+    if (!post) return toast('文章不存在', 'error');
+    editingId = id; document.getElementById('editorTitle').textContent = '✏️ 编辑文章';
+    document.getElementById('postTitle').value = post.title; document.getElementById('postContent').value = post.content;
+    currentTags = [...(post.tags||[])]; renderTags(); updatePreview(); showPage('edit');
+  } catch (e) { toast('加载失败', 'error'); }
+}
 
-  async function deletePostConfirm(id) {
-    if (!confirm('确定要删除这篇文章吗？')) return;
-    try {
-      await GitHubStore.deletePost(id);
-      toast('已删除', 'success');
-      await loadPosts();
-    } catch (e) { toast('删除失败: ' + e.message, 'error'); }
-  }
+async function savePost() {
+  const title = document.getElementById('postTitle').value.trim(), content = document.getElementById('postContent').value.trim();
+  if (!title || !content) return toast('请填写标题和内容', 'error');
+  try {
+    if (editingId) { await GitHubStore.updatePost(editingId, { title, content, tags: currentTags }); toast('更新成功！', 'success'); }
+    else { await GitHubStore.createPost({ title, content, tags: currentTags }); toast('发布成功！', 'success'); }
+    showPage('list');
+  } catch (e) { toast('保存失败: ' + e.message, 'error'); }
+}
 
-  // ===== 标签 =====
-  document.getElementById('tagInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && this.value.trim()) {
-      e.preventDefault();
-      if (!currentTags.includes(this.value.trim())) { currentTags.push(this.value.trim()); renderTags(); }
-      this.value = '';
-    }
-    if (e.key === 'Backspace' && !this.value && currentTags.length) { currentTags.pop(); renderTags(); }
-  });
+async function deletePostConfirm(id) { if (!confirm('确定删除？')) return; try { await GitHubStore.deletePost(id); toast('已删除', 'success'); loadPosts(); } catch (e) { toast('删除失败', 'error'); } }
 
-  function renderTags() {
-    const wrap = document.getElementById('tagWrap');
-    const input = document.getElementById('tagInput');
-    wrap.innerHTML = '';
-    currentTags.forEach((t, i) => {
-      const tag = document.createElement('span');
-      tag.className = 'tag-item';
-      tag.innerHTML = `${esc(t)} <span class="remove" onclick="removeTag(${i})">×</span>`;
-      wrap.appendChild(tag);
-    });
-    wrap.appendChild(input);
-  }
-  function removeTag(i) { currentTags.splice(i, 1); renderTags(); }
+document.getElementById('tagInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim()) { e.preventDefault(); if (!currentTags.includes(this.value.trim())) { currentTags.push(this.value.trim()); renderTags(); } this.value = ''; }
+  if (e.key === 'Backspace' && !this.value && currentTags.length) { currentTags.pop(); renderTags(); }
+});
+function renderTags() { const w = document.getElementById('tagWrap'), inp = document.getElementById('tagInput'); w.innerHTML = ''; currentTags.forEach((t,i) => { const s = document.createElement('span'); s.className = 'tag-item'; s.innerHTML = esc(t) + ' <span class="remove" onclick="removeTag(' + i + ')">×</span>'; w.appendChild(s); }); w.appendChild(inp); }
+function removeTag(i) { currentTags.splice(i,1); renderTags(); }
+document.getElementById('postContent').addEventListener('input', updatePreview);
+function updatePreview() { const c = document.getElementById('postContent').value; document.getElementById('previewContent').innerHTML = c ? marked.parse(c) : '<p style="color:var(--text-dim)">在左侧输入 Markdown，这里实时预览...</p>'; }
 
-  // ===== 预览 =====
-  document.getElementById('postContent').addEventListener('input', updatePreview);
-  function updatePreview() {
-    const content = document.getElementById('postContent').value;
-    document.getElementById('previewContent').innerHTML = content
-      ? marked.parse(content)
-      : '<p style="color:var(--text-dim)">在左侧输入 Markdown，这里实时预览...</p>';
-  }
+// 文件管理
+const uploadZone = document.getElementById('uploadZone'), fileInput = document.getElementById('fileInput');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => { if (fileInput.files.length) uploadFiles(fileInput.files); fileInput.value = ''; });
 
-  // ===== 文件管理 =====
-  const uploadZone = document.getElementById('uploadZone');
-  const fileInput = document.getElementById('fileInput');
+async function uploadFiles(fileList) {
+  const progress = document.getElementById('uploadProgress'), bar = document.getElementById('uploadBar'), info = document.getElementById('uploadInfo');
+  progress.classList.remove('hidden'); bar.style.width = '0%'; info.textContent = '正在上传 ' + fileList.length + ' 个文件...';
+  const fd = new FormData(); for (const f of fileList) fd.append('files', f);
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', API + '/api/upload');
+  const t = localStorage.getItem('admin_token'); if (t) xhr.setRequestHeader('Authorization', 'Bearer ' + t);
+  xhr.upload.onprogress = e => { if (e.lengthComputable) { const p = Math.round(e.loaded/e.total*100); bar.style.width = p+'%'; info.textContent = '上传中... '+p+'% ('+fmtSize(e.loaded)+' / '+fmtSize(e.total)+')'; } };
+  xhr.onload = () => { progress.classList.add('hidden'); if (xhr.status === 200) { toast('上传成功！','success'); loadFiles(); } else toast('上传失败','error'); };
+  xhr.onerror = () => { progress.classList.add('hidden'); toast('上传失败','error'); };
+  xhr.send(fd);
+}
 
-  // 拖拽
-  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
-  uploadZone.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadZone.classList.remove('drag');
-    if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
-  });
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files.length) uploadFiles(fileInput.files);
-    fileInput.value = '';
-  });
+async function loadFiles() {
+  const w = document.getElementById('fileTableWrap');
+  try {
+    const files = await api('/api/files');
+    if (!files.length) { w.innerHTML = '<div class="empty"><div class="icon">📂</div><p>还没有上传文件</p></div>'; return; }
+    w.innerHTML = '<table class="data-table"><thead><tr><th>文件名</th><th>大小</th><th>时间</th><th>操作</th></tr></thead><tbody>' +
+      files.map(f => '<tr><td class="fname" title="'+esc(f.name)+'">'+esc(f.name)+'</td><td style="color:var(--text-muted)">'+fmtSize(f.size)+'</td><td style="color:var(--text-muted);font-size:0.8rem">'+fmtDate(f.mtime)+'</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="downloadFile(\''+f.id+'\',\''+esc(f.name)+'\')">下载</button><button class="btn btn-danger btn-sm" onclick="deleteFile(\''+f.id+'\')">删除</button></td></tr>').join('') + '</tbody></table>';
+  } catch (e) { w.innerHTML = '<div class="empty"><p>加载失败: ' + esc(e.message) + '</p></div>'; }
+}
 
-  async function uploadFiles(fileList) {
-    const progress = document.getElementById('uploadProgress');
-    const bar = document.getElementById('uploadBar');
-    const info = document.getElementById('uploadInfo');
-    progress.classList.remove('hidden');
-    bar.style.width = '0%';
-    info.textContent = `正在上传 ${fileList.length} 个文件...`;
+async function downloadFile(id, name) {
+  try { const r = await fetch(API+'/api/download/'+id, { headers: { 'Authorization':'Bearer '+localStorage.getItem('admin_token') } }); if (!r.ok) throw new Error(); const b = await r.blob(); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href=u; a.download=name; a.click(); URL.revokeObjectURL(u); }
+  catch (e) { toast('下载失败', 'error'); }
+}
+async function deleteFile(id) { if (!confirm('确定删除？')) return; try { await api('/api/files/'+id, { method:'DELETE' }); toast('已删除','success'); loadFiles(); } catch (e) { toast('删除失败','error'); } }
 
-    const formData = new FormData();
-    for (const f of fileList) formData.append('files', f);
+// 视频库
+async function loadVideos() {
+  const w = document.getElementById('videoListWrap');
+  document.getElementById('videoPlayerWrap').classList.add('hidden');
+  try {
+    const videos = await api('/api/video/list');
+    if (!videos.length) { w.innerHTML = '<div class="empty"><div class="icon">🎬</div><p>还没有视频，上传 MP4/MKV 文件即可</p></div>'; return; }
+    w.innerHTML = '<div class="video-grid">' + videos.map(v =>
+      '<div class="video-card" onclick="playVideo(\''+v.id+'\',\''+esc(v.name)+'\')">' +
+      '<div class="thumb">' + (v.ext==='.mkv'?'🎞️':'🎬') + '</div>' +
+      '<div class="vcard-body"><div class="vcard-name">'+esc(v.name)+'</div><div class="vcard-meta">'+fmtSize(v.size)+' · '+v.ext+'</div></div></div>'
+    ).join('') + '</div>';
+  } catch (e) { w.innerHTML = '<div class="empty"><p>加载失败: ' + esc(e.message) + '</p></div>'; }
+}
 
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', API + '/api/upload');
-      const token = localStorage.getItem('admin_token');
-      if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+function playVideo(id, name) {
+  currentVideoId = id;
+  const player = document.getElementById('videoPlayer');
+  player.src = API + '/api/video/stream/' + id;
+  document.getElementById('videoTitle').textContent = name;
+  document.getElementById('videoMeta').textContent = '加载中...';
+  document.getElementById('videoListWrap').classList.add('hidden');
+  document.getElementById('videoPlayerWrap').classList.remove('hidden');
+  player.play().catch(() => {});
+}
 
-      xhr.upload.onprogress = e => {
-        if (e.lengthComputable) {
-          const pct = Math.round(e.loaded / e.total * 100);
-          bar.style.width = pct + '%';
-          info.textContent = `上传中... ${pct}% (${fmtSize(e.loaded)} / ${fmtSize(e.total)})`;
-        }
-      };
+function closePlayer() { const p = document.getElementById('videoPlayer'); p.pause(); p.src=''; document.getElementById('videoPlayerWrap').classList.add('hidden'); document.getElementById('videoListWrap').classList.remove('hidden'); currentVideoId = null; }
 
-      xhr.onload = () => {
-        progress.classList.add('hidden');
-        if (xhr.status === 200) {
-          toast('上传成功！', 'success');
-          loadFiles();
-        } else {
-          toast('上传失败', 'error');
-        }
-      };
+async function showAdmin() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('adminPage').classList.remove('hidden');
+  await checkServer(); await loadPosts();
+}
 
-      xhr.onerror = () => {
-        progress.classList.add('hidden');
-        toast('上传失败，请检查服务器', 'error');
-      };
-
-      xhr.send(formData);
-    } catch (e) {
-      progress.classList.add('hidden');
-      toast('上传失败: ' + e.message, 'error');
-    }
-  }
-
-  async function loadFiles() {
-    const wrap = document.getElementById('fileTableWrap');
-    try {
-      const files = await api('/api/files');
-      if (files.length === 0) {
-        wrap.innerHTML = '<div class="empty"><div class="icon">📂</div><p>还没有上传文件</p></div>';
-        return;
-      }
-      wrap.innerHTML = `
-        <table class="file-table">
-          <thead><tr><th>文件名</th><th>大小</th><th>上传时间</th><th>操作</th></tr></thead>
-          <tbody>
-            ${files.map(f => `
-              <tr>
-                <td class="fname" title="${esc(f.name)}">${esc(f.name)}</td>
-                <td style="color:var(--text-muted)">${fmtSize(f.size)}</td>
-                <td style="color:var(--text-muted);font-size:0.82rem">${fmtDate2(f.mtime)}</td>
-                <td class="actions">
-                  <button class="btn btn-ghost btn-sm" onclick="downloadFile('${f.id}','${esc(f.name)}')">下载</button>
-                  <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.id}')">删除</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>`;
-    } catch (e) {
-      wrap.innerHTML = `<div class="empty"><p>加载失败: ${esc(e.message)}</p></div>`;
-    }
-  }
-
-  async function downloadFile(id, name) {
-    try {
-      const res = await fetch(API + '/api/download/' + id, {
-        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
-      });
-      if (!res.ok) throw new Error('下载失败');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = name; a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) { toast('下载失败: ' + e.message, 'error'); }
-  }
-
-  async function deleteFile(id) {
-    if (!confirm('确定删除这个文件？')) return;
-    try {
-      await api('/api/files/' + id, { method: 'DELETE' });
-      toast('已删除', 'success');
-      loadFiles();
-    } catch (e) { toast('删除失败: ' + e.message, 'error'); }
-  }
-
-  // ===== 进入管理后台 =====
-  async function showAdmin() {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('adminPage').classList.remove('hidden');
-    await checkServer();
-    await loadPosts();
-  }
-
-  // ===== 工具 =====
-  function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-  function fmtDate2(d) { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; }
-  function fmtSize(b) {
-    if (b < 1024) return b + ' B';
-    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
-    if (b < 1024 * 1024 * 1024) return (b / 1024 / 1024).toFixed(1) + ' MB';
-    return (b / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-  }
-  function toast(msg, type) {
-    document.querySelectorAll('.toast').forEach(t => t.remove());
-    const t = document.createElement('div');
-    t.className = `toast ${type}`; t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-  }
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function fmtDate(d) { const t = new Date(d); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); }
+function fmtSize(b) { if (b<1024) return b+' B'; if (b<1048576) return (b/1024).toFixed(1)+' KB'; if (b<1073741824) return (b/1048576).toFixed(1)+' MB'; return (b/1073741824).toFixed(2)+' GB'; }
+function toast(msg, type) { document.querySelectorAll('.toast').forEach(t=>t.remove()); const t=document.createElement('div'); t.className='toast '+type; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
 </script>
-
 </body>
 </html>
